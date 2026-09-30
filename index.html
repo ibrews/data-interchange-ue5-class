@@ -74,7 +74,7 @@ const SECTIONS = [
 <tr><th>Purpose</th><td>Engine-native</td><td>Scene description, composition, pipelines</td><td>Delivery / runtime transmission</td></tr>
 <tr><th>Units / up axis</th><td>cm, Z-up, left-handed</td><td>Declared (<code>metersPerUnit</code>, <code>upAxis</code>)</td><td>Meters, Y-up, right-handed</td></tr>
 <tr><th>Materials</th><td>Node graphs, Substrate</td><td>UsdPreviewSurface / MaterialX</td><td>Metallic-roughness PBR + KHR extensions</td></tr>
-<tr><th>Instancing</th><td>ISM / HISM, foliage</td><td>PointInstancer / scenegraph instancing</td><td><code>EXT_mesh_gpu_instancing</code></td></tr>
+<tr><th>Instancing</th><td>ISM / HISM, foliage</td><td>PointInstancer / scenegraph instancing</td><td>Shared mesh on many nodes; optional <code>EXT_mesh_gpu_instancing</code></td></tr>
 <tr><th>Lights</th><td>Full</td><td>UsdLux</td><td><code>KHR_lights_punctual</code> (point, spot, directional only)</td></tr>
 <tr><th>Blueprint logic</th><td class='y'>Yes</td><td class='n'>No</td><td class='n'>No</td></tr>
 <tr><th>Composition / layers</th><td class='n'>No</td><td class='y'>Yes — the superpower</td><td class='n'>No</td></tr>
@@ -125,13 +125,13 @@ const SECTIONS = [
       { layout: `big`, title: `The line to land`, bigText: `USD is how you build.\nGLB (or USDZ on Apple) is how you ship.`, bigCaption: `Unreal to USD to GLB gives you an authoring-grade intermediate you can inspect, layer, and fix before flattening to a delivery format.`,
         notes: `- Pause on this one. It is the mental model for the next 100 minutes.
 - Going UE to USD to GLB means you have a stop in the middle where you can open the file, read it, layer over it, and fix things. Going UE straight to GLB is fine too (Block C, path 1), but you lose that inspection point.
-- USD keeps the scene as a scene: references, layers, variants. GLB is a flattened, delivery-oriented package built to load fast on the web and in game engines.` },
+- USD keeps the scene as a scene: references, layers, variants. GLB packages a glTF scene for delivery (hierarchy, cameras, animation survive; USD’s layers and references do not) built to load fast on the web and in game engines.` },
       { title: `The news, in one minute`, subtitle: `Why now is a good time to learn USD`,
-        img: ``, bullets: [`OpenUSD v26.08 shipped in July 2026`, `Core Specification 1.1 has entered the ISO certification process`, `Unity is an AOUSD General Member`, `26.08 adds a Gaussian-splat prim type`],
+        img: ``, bullets: [`OpenUSD v26.08 shipped in July 2026`, `Core Specification 1.1 has entered the ISO certification process`, `Unity is an AOUSD General Member`, `OpenUSD has a Gaussian-splat prim type (since 26.03)`],
         notes: `- One minute, no more. This is context, not curriculum.
 - OpenUSD v26.08 was released 2026-07-20. Core Spec 1.1 entered the ISO certification process; 1.0 was ratified earlier in the year.
 - Unity joined AOUSD as a General Member (2026-07-21). Careful: a secondary source claimed Meta and Epic joined at the same time; that is UNVERIFIED, so do not say it.
-- 26.08 adds a Gaussian-splat prim type (UsdVolParticleField3DGaussianSplat). If a student asks: it matters if your scene carries splat captures.
+- OpenUSD 26.03 introduced a Gaussian-splat prim type (UsdVolParticleField3DGaussianSplat); it is also in 26.08. If a student asks: it matters if your scene carries splat captures.
 - KB source: intelligence/research/openusd-siggraph-2026-and-v26-08.md.` },
     ] },
 
@@ -379,7 +379,7 @@ def Xform "World"
 - Godot's glTF importer builds StandardMaterial3D; Three.js GLTFLoader builds MeshStandardMaterial; Unreal either references USD as a Stage or converts on import. About 1 minute.` },
       { layout: `html`, title: `The side-by-side`, subtitle: `Same camera. Same scene. Three renderers.`,
         html: `<div class='dk-trio'><figure class='dk-fig'><img src='images/class/sbs-unreal.jpg' alt='Unreal Engine render of the class demo scene'><figcaption>Unreal 5.8</figcaption></figure><figure class='dk-fig'><img src='images/class/sbs-godot.jpg' alt='Godot render of the same scene'><figcaption>Godot 4.7</figcaption></figure><figure class='dk-fig'><img src='images/class/sbs-threejs.jpg' alt='Three.js render of the same scene'><figcaption>Three.js r170</figcaption></figure></div>`,
-        caption: `Same GLB camera in all three. Light intensities do not map 1:1: tuned by eye in Godot and Three.js. Spot the differences.`,
+        caption: `Unreal from its CineCameraActor; Godot and Three.js through that camera exported in the GLB. Light intensities do not map 1:1: tuned by eye in Godot and Three.js. Spot the differences.`,
         notes: `- Real renders, unreviewed by a human before class: Unreal from the level's CineCameraActor, then the same baked GLB in Godot 4.7 and Three.js r170 looking through the camera the glTF exporter wrote into the file (no by-eye camera). Lights were tuned by eye: Godot light energy x0.08, Three.js exposure 0.7 and environment 0.45, shadows on.
 - The side-by-side moment: UE screenshot, Godot, Three.js, same camera.
 - The camera is not tuned by eye: it is the camera stored in the GLB (meters, Y-up already converted), with the same 35 degree vertical FOV as the 21 mm CineCamera. Intensities will not map 1:1: candela is not Godot light_energy. Tune those by eye and say so out loud.\n- Differences to point at: the yellow Substrate sphere is black in both (in our 5.8.3 test the exporter could not bake it); the instanced cones are plain gray (overrides on instanced components are ignored); the decal, fog, sky, and post-process are gone; the blue sky is just a background color we set.
@@ -395,11 +395,11 @@ def Xform "World"
       { layout: `html`, title: `Three ways in`, subtitle: `Datasmith, Interchange, USD Stage`,
         html: `<table class='dk-table dk-in'><thead><tr><th>Tool</th><th>Use it when</th><th>Key idea</th></tr></thead><tbody>
 <tr><th>Datasmith</th><td>CAD / BIM: Revit, SketchUp, Rhino, Archicad, 3ds Max</td><td>Exporter plugins in the DCC. <b>Direct Link</b> for live resync. Keeps metadata. The architect’s path.</td></tr>
-<tr><th>Interchange</th><td>FBX / OBJ / glTF / MaterialX / textures into assets (USD via an Experimental plugin)</td><td>UE’s newer import framework. <b>Pipelines are customizable</b> in Blueprint / Python: import becomes a repeatable, scripted step.</td></tr>
+<tr><th>Interchange</th><td>FBX / OBJ / glTF / MaterialX / textures into assets (USD: production ready for asset import in 5.8, experimental for level import)</td><td>UE’s newer import framework. <b>Pipelines are customizable</b> in Blueprint / Python: import becomes a repeatable, scripted step.</td></tr>
 <tr><th>USD Stage</th><td>Live, non-destructive USD in the level</td><td>The stage is <b>referenced, not imported</b>. Edit layers; keep the source of truth outside UE.</td></tr>
 </tbody></table>`,
         notes: `- Datasmith: the architect’s path and my home turf. Exporter plugins in the DCC (Revit, SketchUp, Rhino, Archicad, 3ds Max), Direct Link for live resync, and it keeps metadata.
-- Interchange: UE’s newer import framework for FBX / OBJ / glTF and increasingly USD. The real lesson is that pipelines are customizable in Blueprint or Python, so import becomes a repeatable, scripted step instead of a dialog. In recent 5.x (including 5.8.3) Interchange is the default for FBX, OBJ, glTF/GLB, MaterialX, and textures. USD goes through Interchange only with the Experimental \"Interchange OpenUSD\" plugin; otherwise the USD Importer plugin handles USD.
+- Interchange: UE’s newer import framework for FBX / OBJ / glTF and increasingly USD. The real lesson is that pipelines are customizable in Blueprint or Python, so import becomes a repeatable, scripted step instead of a dialog. In recent 5.x (including 5.8.3) Interchange is the default for FBX, OBJ, glTF/GLB, MaterialX, and textures. Per Epic’s 5.8 release notes, USD through Interchange is production ready for asset import and still experimental for level import; the USD Importer plugin handles export and the USD Stage.
 - USD Stage editor: the stage is referenced, not imported. You edit layers and keep the source of truth outside UE. It is the inverse of the export half.
 - Keep each row to about 3 minutes; leave time for the round-trip question.` },
       { layout: `html`, title: `The round-trip question`, subtitle: `“Can I go UE to USD, edit in Houdini or Blender, and come back?”`,
@@ -419,7 +419,7 @@ def Xform "World"
 <div class="dk-anim"><svg class="dk-svg" viewBox="0 0 1600 600" role="img" aria-label="Round trip: Unreal exports USD, Blender or Houdini edit in a new layer, Unreal opens the stack; a re-export replaces only the bottom layer">
 <defs><marker id="rtM" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#9fb3c8"/></marker></defs>
 <g class="rt-a"><rect x="40" y="30" width="380" height="100" rx="18" fill="rgba(20,24,48,.9)" stroke="#00d4ff" stroke-width="3"/><text x="230" y="76" text-anchor="middle" fill="#fff" font-size="36" font-weight="700">Unreal</text><text x="230" y="112" text-anchor="middle" fill="#9fb3c8" font-size="26">export .usda</text>
-<rect x="610" y="30" width="380" height="100" rx="18" fill="rgba(20,24,48,.9)" stroke="#a78bfa" stroke-width="3"/><text x="800" y="76" text-anchor="middle" fill="#fff" font-size="36" font-weight="700">Blender / Houdini</text><text x="800" y="112" text-anchor="middle" fill="#9fb3c8" font-size="26">edit in a new layer</text>
+<rect x="610" y="30" width="380" height="100" rx="18" fill="rgba(20,24,48,.9)" stroke="#a78bfa" stroke-width="3"/><text x="800" y="76" text-anchor="middle" fill="#fff" font-size="36" font-weight="700">Houdini / usdview</text><text x="800" y="112" text-anchor="middle" fill="#9fb3c8" font-size="26">edit in a new layer</text>
 <rect x="1180" y="30" width="380" height="100" rx="18" fill="rgba(20,24,48,.9)" stroke="#34d399" stroke-width="3"/><text x="1370" y="76" text-anchor="middle" fill="#fff" font-size="36" font-weight="700">Unreal again</text><text x="1370" y="112" text-anchor="middle" fill="#9fb3c8" font-size="26">open as a USD Stage</text>
 <g stroke="#9fb3c8" stroke-width="4" fill="none"><path d="M426 80H604" marker-end="url(#rtM)"/><path d="M996 80H1174" marker-end="url(#rtM)"/></g></g>
 <circle class="rt-dot" r="12" fill="#fde68a"/>
@@ -438,7 +438,7 @@ def Xform "World"
 </svg></div>`,
         notes: `- This is the question the class will ask, so ask it for them.
 - Honest answer: geometry, transforms, and cameras, yes. Materials, you get a starting point. Logic, no.
-- Use USD layers so your edits survive re-export. This is exactly what the RenderMan bridge calls Tier 3: hero looks authored natively and composed over our export as sublayers. It is the next block’s recurring idea.` },
+- Author your edits in a separate, stronger USD layer, keep prim paths stable, and check the composed stage after re-export. Caveat: Blender’s standard USD import/export does not preserve that layer structure, so do the layering in a USD-aware tool (usdview, Houdini/Solaris, Omniverse). This is exactly what the RenderMan bridge calls Tier 3: hero looks authored natively and composed over our export as sublayers. It is the next block’s recurring idea.` },
     ] },
 
   { year: `F`, accent: `purple`,
