@@ -175,6 +175,82 @@ def Xform "World"
 - Point out: upAxis, metersPerUnit = 0.01 (centimeters), the per-mesh references, the Material prims, and where the UE material graph became (or failed to become) a preview surface.
 - Then open the same file in usdview, or NVIDIA’s free USD Composer, or Blender, to show it is a real standalone scene. Do not promise which viewer works on every machine; Blender is the safest for students.
 - Ask: who can tell me what \"metersPerUnit = 0.01\" is telling a downstream tool?` },
+      { layout: `html`, title: `How the stage composes`, subtitle: `One root layer, one file per mesh, one material scope. The stage is the composed view.`,
+        html: `<style>
+.cp-root,.cp-file,.cp-mat,.cp-stage,.cp-line{animation:none}
+.dk-anim.on .cp-root{animation:dkIn .6s ease both .2s}
+.dk-anim.on .cp-line{animation:cpDraw .7s ease both}
+.dk-anim.on .cp-f1{animation:dkIn .5s ease both 1s}.dk-anim.on .cp-f2{animation:dkIn .5s ease both 1.3s}.dk-anim.on .cp-f3{animation:dkIn .5s ease both 1.6s}.dk-anim.on .cp-mat{animation:dkIn .5s ease both 1.9s}
+.dk-anim.on .cp-b1{animation:cpDraw .8s ease both 2.5s}.dk-anim.on .cp-b2{animation:cpDraw .8s ease both 2.6s}.dk-anim.on .cp-b3{animation:cpDraw .8s ease both 2.7s}
+.dk-anim.on .cp-stage{animation:dkIn .6s ease both 3.4s}
+.dk-anim.on .cp-t1{animation:dkIn .4s ease both 3.8s}.dk-anim.on .cp-t2{animation:dkIn .4s ease both 4s}.dk-anim.on .cp-t3{animation:dkIn .4s ease both 4.2s}.dk-anim.on .cp-t4{animation:dkIn .4s ease both 4.4s}
+.cp-dot{opacity:0}
+.dk-anim.on .cp-dot{offset-path:path('M420 300 H520 V95 H680');offset-rotate:0deg;animation:cpDot 3.6s linear 5s infinite}
+@keyframes cpDraw{from{stroke-dasharray:1;stroke-dashoffset:1}to{stroke-dasharray:1;stroke-dashoffset:0}}
+@keyframes cpDot{0%{offset-distance:0%;opacity:1}90%{offset-distance:100%;opacity:1}100%{offset-distance:100%;opacity:0}}
+</style>
+<div class="dk-anim"><svg class="dk-svg" viewBox="0 0 1600 600" role="img" aria-label="USD composition: a root layer references one file per mesh and a material scope; the stage is the composed result">
+<defs><marker id="cpM" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#9fb3c8"/></marker><marker id="cpMa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#f59e0b"/></marker></defs>
+<g stroke="#00d4ff" stroke-width="4" fill="none">
+<path class="cp-line" pathLength="1" style="animation-delay:.7s" d="M420 300H520"/>
+<path class="cp-line" pathLength="1" style="animation-delay:.8s" d="M520 95V485"/>
+<path class="cp-line" pathLength="1" style="animation-delay:.9s" d="M520 95H674" marker-end="url(#cpM)"/>
+<path class="cp-line" pathLength="1" style="animation-delay:1.1s" d="M520 195H674" marker-end="url(#cpM)"/>
+<path class="cp-line" pathLength="1" style="animation-delay:1.3s" d="M520 295H674" marker-end="url(#cpM)"/>
+<path class="cp-line" pathLength="1" style="animation-delay:1.6s;stroke:#f59e0b" d="M520 485H674" marker-end="url(#cpMa)"/></g>
+<g class="cp-root"><rect x="40" y="200" width="380" height="200" rx="20" fill="rgba(167,139,250,.14)" stroke="#a78bfa" stroke-width="3"/><text x="230" y="262" text-anchor="middle" fill="#fff" font-size="36" font-weight="700" font-family="JetBrains Mono,monospace">scene.usda</text><text x="230" y="306" text-anchor="middle" fill="#d9ccff" font-size="28">the root layer</text><text x="230" y="350" text-anchor="middle" fill="#9fb3c8" font-size="26" font-family="JetBrains Mono,monospace">def Xform "World"</text></g>
+<text x="600" y="72" text-anchor="middle" fill="#9fe9ff" font-size="22" transform="translate(0,0)">references</text>
+<g class="cp-file cp-f1"><rect x="680" y="60" width="340" height="70" rx="14" fill="rgba(0,212,255,.12)" stroke="#00d4ff" stroke-width="3"/><text x="850" y="105" text-anchor="middle" fill="#fff" font-size="28" font-family="JetBrains Mono,monospace">SM_Chair_01.usd</text></g>
+<g class="cp-file cp-f2"><rect x="680" y="160" width="340" height="70" rx="14" fill="rgba(0,212,255,.12)" stroke="#00d4ff" stroke-width="3"/><text x="850" y="205" text-anchor="middle" fill="#fff" font-size="28" font-family="JetBrains Mono,monospace">SM_Table_01.usd</text></g>
+<g class="cp-file cp-f3"><rect x="680" y="260" width="340" height="70" rx="14" fill="rgba(0,212,255,.12)" stroke="#00d4ff" stroke-width="3"/><text x="850" y="305" text-anchor="middle" fill="#fff" font-size="28" font-family="JetBrains Mono,monospace">SM_Cone.usd</text></g>
+<g class="cp-mat"><rect x="680" y="430" width="340" height="110" rx="14" fill="rgba(245,158,11,.12)" stroke="#f59e0b" stroke-width="3"/><text x="850" y="480" text-anchor="middle" fill="#fff" font-size="28" font-family="JetBrains Mono,monospace">/World/Materials</text><text x="850" y="518" text-anchor="middle" fill="#fde68a" font-size="26">Scope: M_Wood, ...</text></g>
+<g fill="none" stroke="#f59e0b" stroke-width="4"><path class="cp-b1" pathLength="1" d="M1024 95H1064V485H1026" marker-end="url(#cpMa)"/><path class="cp-b2" pathLength="1" d="M1024 195H1064"/><path class="cp-b3" pathLength="1" d="M1024 295H1064"/></g>
+<text class="cp-bl" x="1110" y="46" fill="#fde68a" font-size="24" text-anchor="end">material:binding</text>
+<g class="cp-stage"><path d="M1096 300H1176" stroke="#9fb3c8" stroke-width="4" marker-end="url(#cpM)"/><text x="1136" y="340" text-anchor="middle" fill="#9fb3c8" font-size="22">compose</text>
+<rect x="1180" y="120" width="380" height="380" rx="20" fill="rgba(52,211,153,.10)" stroke="#34d399" stroke-width="3"/><text x="1370" y="170" text-anchor="middle" fill="#34d399" font-size="26" font-weight="700" letter-spacing="2">THE STAGE</text></g>
+<g font-size="27" font-family="JetBrains Mono,monospace" fill="#e8eeff"><text class="cp-t1" x="1210" y="235">/World</text><text class="cp-t2" x="1240" y="290">SM_Chair_01</text><text class="cp-t2" x="1240" y="335">SM_Table_01</text><text class="cp-t3" x="1240" y="380">SM_Cone</text><text class="cp-t4" x="1240" y="440" fill="#fde68a">Materials/M_Wood</text></g>
+<circle class="cp-dot" r="12" fill="#fde68a"/>
+</svg></div>`,
+        notes: `- Animated companion to the .usda you just read. The root layer (scene.usda) holds almost no geometry: it references one small file per mesh and defines a Materials scope. Each mesh prim carries a material:binding relationship that points at a prim in that scope.
+- The stage is what a viewer or Unreal's USD Stage editor shows after composing all of it. It is not a file, it is the result. That is why you can add a layer on top and leave the source alone.
+- Names are illustrative (same excerpt as the previous slide); your real export will differ. Roughly 1 minute.` },
+      { layout: `html`, title: `What a hop rewrites`, subtitle: `Units, axes, handedness. Every hop that changes convention has to convert all three.`,
+        html: `<style>
+.un-a,.un-b,.un-c,.un-d,.un-g{animation:none}
+.dk-anim.on .un-a{animation:dkIn .6s ease both .2s}
+.dk-anim.on .un-arrow{animation:unFlow 1.4s linear infinite}
+.dk-anim.on .un-b{animation:dkIn .6s ease both 1.2s}
+.dk-anim.on .un-c{animation:dkIn .5s ease both 2s}.dk-anim.on .un-c2{animation-delay:2.4s}.dk-anim.on .un-c3{animation-delay:2.8s}
+.dk-anim.on .un-g{animation:unGizmo 1s ease both 3.3s}
+.dk-anim.on .un-d{animation:dkIn .7s ease both 4.2s}
+.dk-anim.on .un-glow{animation:unGlow 4s ease-in-out infinite}
+.un-arrow{stroke-dasharray:16 12}
+.un-glow{transform-box:fill-box;transform-origin:center}
+@keyframes unFlow{from{stroke-dashoffset:56}to{stroke-dashoffset:0}}
+@keyframes unGizmo{from{opacity:0;transform:rotate(-90deg)}to{opacity:1;transform:none}}
+@keyframes unGlow{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+</style>
+<div class="dk-anim"><svg class="dk-svg" viewBox="0 0 1600 570" role="img" aria-label="A hop rewrites units and axes: centimeters, Z-up in Unreal becomes meters, Y-up in glTF">
+<defs><filter id="unGl" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<marker id="unM" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker></defs>
+<g class="un-a"><rect x="40" y="20" width="560" height="400" rx="22" fill="rgba(20,24,48,.9)" stroke="#00d4ff" stroke-width="3"/><text x="70" y="72" fill="#00d4ff" font-size="36" font-weight="700">Unreal</text><text x="70" y="112" fill="#9fb3c8" font-size="28">Z up · left-handed · 1 unit = 1 cm</text>
+<g stroke-width="6" fill="none" stroke-linecap="round"><path d="M160 380V210" stroke="#60a5fa" marker-end="url(#unM)"/><path d="M160 380H320" stroke="#fb7185" marker-end="url(#unM)"/><path d="M160 380L104 412" stroke="#34d399" marker-end="url(#unM)"/></g>
+<text x="176" y="216" fill="#60a5fa" font-size="30" font-weight="700">Z</text><text x="322" y="368" fill="#fb7185" font-size="30" font-weight="700">X</text><text x="74" y="418" fill="#34d399" font-size="30" font-weight="700">Y</text>
+<rect x="380" y="160" width="60" height="220" rx="10" fill="rgba(0,212,255,.25)" stroke="#00d4ff" stroke-width="3"/><path d="M465 160V380M455 160H475M455 380H475" stroke="#9fb3c8" stroke-width="3" fill="none"/><text x="485" y="285" fill="#fff" font-size="40" font-weight="700">180</text></g>
+<g class="un-b"><rect class="un-glow" x="690" y="150" width="220" height="100" rx="18" fill="rgba(167,139,250,.18)" stroke="#a78bfa" stroke-width="3" filter="url(#unGl)"/><text x="800" y="196" text-anchor="middle" fill="#fff" font-size="34" font-weight="700">a hop</text><text x="800" y="230" text-anchor="middle" fill="#d9ccff" font-size="24">the conversion</text>
+<path class="un-arrow" d="M610 200H694" stroke="#a78bfa" stroke-width="5" fill="none" marker-end="url(#unM)"/><path class="un-arrow" d="M906 200H990" stroke="#a78bfa" stroke-width="5" fill="none" marker-end="url(#unM)"/></g>
+<g font-size="27" font-weight="600" text-anchor="middle"><g class="un-c"><rect x="670" y="290" width="260" height="50" rx="25" fill="rgba(245,158,11,.15)" stroke="#f59e0b" stroke-width="2"/><text x="800" y="325" fill="#fde68a">scale × 0.01</text></g>
+<g class="un-c un-c2"><rect x="670" y="352" width="260" height="50" rx="25" fill="rgba(245,158,11,.15)" stroke="#f59e0b" stroke-width="2"/><text x="800" y="387" fill="#fde68a">Z-up to Y-up</text></g>
+<g class="un-c un-c3"><rect x="670" y="414" width="260" height="50" rx="25" fill="rgba(245,158,11,.15)" stroke="#f59e0b" stroke-width="2"/><text x="800" y="449" fill="#fde68a">flip handedness</text></g></g>
+<g class="un-a" style="animation-delay:1.6s"><rect x="1000" y="20" width="560" height="400" rx="22" fill="rgba(20,24,48,.9)" stroke="#34d399" stroke-width="3"/><text x="1030" y="72" fill="#34d399" font-size="36" font-weight="700">glTF / GLB</text><text x="1030" y="112" fill="#9fb3c8" font-size="28">Y up · right-handed · 1 unit = 1 m</text>
+<g class="un-g" style="transform-origin:1120px 380px"><g stroke-width="6" fill="none" stroke-linecap="round"><path d="M1120 380V210" stroke="#34d399" marker-end="url(#unM)"/><path d="M1120 380H1280" stroke="#fb7185" marker-end="url(#unM)"/><path d="M1120 380L1064 412" stroke="#60a5fa" marker-end="url(#unM)"/></g>
+<text x="1136" y="216" fill="#34d399" font-size="30" font-weight="700">Y</text><text x="1282" y="368" fill="#fb7185" font-size="30" font-weight="700">X</text><text x="1034" y="418" fill="#60a5fa" font-size="30" font-weight="700">Z</text></g>
+<rect x="1340" y="160" width="60" height="220" rx="10" fill="rgba(52,211,153,.25)" stroke="#34d399" stroke-width="3"/><path d="M1425 160V380M1415 160H1435M1415 380H1435" stroke="#9fb3c8" stroke-width="3" fill="none"/><text x="1445" y="285" fill="#fff" font-size="40" font-weight="700">1.8</text></g>
+<g class="un-d"><rect x="40" y="490" width="1520" height="64" rx="16" fill="rgba(251,113,133,.08)" stroke="#fb7185" stroke-width="2" stroke-dasharray="10 8"/><text x="800" y="533" text-anchor="middle" fill="#ffc4cc" font-size="30" font-weight="600">Miss one, and the chair is 100 times too big, or lying on its side.</text></g>
+</svg></div>`,
+        notes: `- Unreal is Z-up, left-handed, and one unit is one centimeter. glTF is Y-up, right-handed, and one unit is one meter. A hop between them has to scale by 0.01, swap the up axis, and flip handedness. USD carries the convention in metadata (upAxis, metersPerUnit), so the exporter can be honest about it and the importer can convert.
+- Tie forward to the MetaHuman war story: one part of the asset got its 0.01 and another did not, and the result was an asset that looked fine in one place and 100 times off in another.
+- Style note: the flowing-dash arrow and pulsing glow come from the SensAI deck's animated diagrams. About 1 minute.` },
       { title: `Sharp edges, on purpose`, subtitle: `All learned the hard way in our own bridges`,
         img: `images/class/sharp-edges-viausd-fixed.jpg`, bullets: [`Referenced meshes can compose as an Xform, not a Mesh — tools that check prim type get fooled`, `Multi-material meshes become GeomSubsets — some consumers silently fall back to one material`, `The stock exporters reliably carry constants and directly-wired textures; anything else gets baked or lost`, `Substrate (on in new 5.8 projects) can hide materials from third-party tooling`],
         notes: `- Show these on purpose; each one is a real failure from our bridges.
@@ -210,8 +286,36 @@ def Xform "World"
 - Blender: import USD, export glTF (.glb). It is free, it works on every student machine, and it is scriptable.
 - Mention alternatives (Omniverse, command-line converters) without promising them.
 - Tie back to the thesis: going through USD costs a step, but you get a file you can read, layer, and repair before flattening.` },
-      { title: `Check after`, subtitle: `Look at it in a viewer, then validate`,
-        img: ``, bullets: [`Drop the GLB into a glTF viewer (e.g. the Don McCurdy viewer or the Khronos sample viewer)`, `Run the glTF Validator`, `Check the bounds — not just “does something appear?”`, `Do it in the target engine too (that is Block D)`],
+      { layout: `html`, title: `Check after`, subtitle: `Look at it in a viewer, then validate`,
+        html: `<style>
+.ca-n{animation:none}
+.dk-anim.on .ca-n{animation:dkIn .6s ease both}
+.dk-anim.on .n1{animation-delay:.2s}.dk-anim.on .n2{animation-delay:.6s}.dk-anim.on .n3{animation-delay:1s}.dk-anim.on .n4{animation-delay:1.4s}
+.dk-anim.on .ca-cap{animation:dkIn .6s ease both;animation-delay:1.8s}
+.dk-anim.on .ca-ret{animation:dkIn .8s ease both;animation-delay:2s}
+.ca-dot,.ca-hl{opacity:0}
+.dk-anim.on .ca-dot{offset-path:path('M200 170 H1400 V50 H200 Z');offset-rotate:0deg;animation:caDot 9s linear 2.6s infinite}
+.dk-anim.on .ca-hl{animation:caHl 9s ease-in-out infinite}
+.dk-anim.on .h1{animation-delay:2.4s}.dk-anim.on .h2{animation-delay:3.8s}.dk-anim.on .h3{animation-delay:5.1s}.dk-anim.on .h4{animation-delay:6.5s}
+@keyframes caDot{0%{offset-distance:0%;opacity:1}98%{offset-distance:100%;opacity:1}100%{offset-distance:100%;opacity:0}}
+@keyframes caHl{0%{opacity:0}3%,12%{opacity:1}20%,100%{opacity:0}}
+</style>
+<div class="dk-anim"><svg class="dk-svg" viewBox="0 0 1600 520" role="img" aria-label="Loop: decide, export, inspect, validate, with a return path to fix and export again">
+<defs><marker id="caM" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#9fb3c8"/></marker><marker id="caMa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#f59e0b"/></marker></defs>
+<g class="ca-ret"><path d="M1400 110 V50 H200 V108" fill="none" stroke="#f59e0b" stroke-width="4" stroke-dasharray="14 10" marker-end="url(#caMa)"/>
+<text x="800" y="36" text-anchor="middle" fill="#fde68a" font-size="28" font-weight="600">Something off? Fix it, then export again.</text></g>
+<g stroke="#9fb3c8" stroke-width="4" fill="none"><path d="M356 170H444" marker-end="url(#caM)"/><path d="M756 170H844" marker-end="url(#caM)"/><path d="M1156 170H1244" marker-end="url(#caM)"/></g>
+<g class="ca-n n1"><rect x="50" y="110" width="300" height="120" rx="20" fill="rgba(20,24,48,.9)" stroke="#a78bfa" stroke-width="3"/><text x="200" y="158" text-anchor="middle" fill="#a78bfa" font-size="26" font-weight="700" letter-spacing="3">STEP 1</text><text x="200" y="204" text-anchor="middle" fill="#fff" font-size="40" font-weight="700">Decide</text><rect class="ca-hl h1" x="50" y="110" width="300" height="120" rx="20" fill="none" stroke="#fde68a" stroke-width="6"/></g>
+<g class="ca-n n2"><rect x="450" y="110" width="300" height="120" rx="20" fill="rgba(20,24,48,.9)" stroke="#00d4ff" stroke-width="3"/><text x="600" y="158" text-anchor="middle" fill="#00d4ff" font-size="26" font-weight="700" letter-spacing="3">STEP 2</text><text x="600" y="204" text-anchor="middle" fill="#fff" font-size="40" font-weight="700">Export</text><rect class="ca-hl h2" x="450" y="110" width="300" height="120" rx="20" fill="none" stroke="#fde68a" stroke-width="6"/></g>
+<g class="ca-n n3"><rect x="850" y="110" width="300" height="120" rx="20" fill="rgba(20,24,48,.9)" stroke="#34d399" stroke-width="3"/><text x="1000" y="158" text-anchor="middle" fill="#34d399" font-size="26" font-weight="700" letter-spacing="3">STEP 3</text><text x="1000" y="204" text-anchor="middle" fill="#fff" font-size="40" font-weight="700">Inspect</text><rect class="ca-hl h3" x="850" y="110" width="300" height="120" rx="20" fill="none" stroke="#fde68a" stroke-width="6"/></g>
+<g class="ca-n n4"><rect x="1250" y="110" width="300" height="120" rx="20" fill="rgba(20,24,48,.9)" stroke="#fb7185" stroke-width="3"/><text x="1400" y="158" text-anchor="middle" fill="#fb7185" font-size="26" font-weight="700" letter-spacing="3">STEP 4</text><text x="1400" y="204" text-anchor="middle" fill="#fff" font-size="40" font-weight="700">Validate</text><rect class="ca-hl h4" x="1250" y="110" width="300" height="120" rx="20" fill="none" stroke="#fde68a" stroke-width="6"/></g>
+<g class="ca-cap" text-anchor="middle" font-size="28"><text x="200" y="290" fill="#dbe4ff">What must survive?</text><text x="200" y="330" fill="#9fb3c8" font-size="26">units, materials, lights</text>
+<text x="600" y="290" fill="#dbe4ff">USD or GLB</text><text x="600" y="330" fill="#9fb3c8" font-size="26">run Preflight first</text>
+<text x="1000" y="290" fill="#dbe4ff">Open it in a viewer</text><text x="1000" y="330" fill="#9fb3c8" font-size="26">bounds, per mesh</text>
+<text x="1400" y="290" fill="#dbe4ff">glTF Validator</text><text x="1400" y="330" fill="#9fb3c8" font-size="26">then the target engine</text></g>
+<g class="ca-cap"><rect x="50" y="410" width="1500" height="84" rx="16" fill="rgba(0,212,255,.07)" stroke="#00d4ff" stroke-width="2" stroke-dasharray="10 8"/><text x="800" y="464" text-anchor="middle" fill="#e8eeff" font-size="32" font-weight="600">A green validator is not the same as looks right. Look in the target too.</text></g>
+<circle class="ca-dot" r="13" fill="#fde68a"/>
+</svg></div>`,
         notes: `- The check-after step is the whole thesis in one slide: decide what matters, check before export, check again in the target.
 - Viewers named in the plan: gltf-viewer.donmccurdy.com and the Khronos sample viewer. Run the glTF Validator on the file.
 - Check the bounds. That sets up the war story on the next slide: a combined bounding box can look plausible while individual meshes are wildly the wrong size.` },
@@ -239,6 +343,40 @@ def Xform "World"
 - Point out color space, tone mapping, and environment lighting. A GLB in a Three.js scene with no lights or environment map looks wrong, but it is not; it needs light or an environment map.
 - Three.js has a USDZLoader / USDZExporter for the Apple side. It is limited, and worth a mention only.
 - Tie back to the site: the /webxr page on alexcoulombepresents.com. GLB is also the WebXR delivery format.` },
+      { layout: `html`, title: `One file, three interpretations`, subtitle: `Every reader builds its own scene from the same data`,
+        html: `<style>
+.hb-n,.hb-c{animation:none}
+.dk-anim.on .hb-hub{animation:dkIn .7s ease both .2s}
+.dk-anim.on .hb-n{animation:dkIn .6s ease both}.dk-anim.on .hb-n1{animation-delay:.9s}.dk-anim.on .hb-n2{animation-delay:1.3s}.dk-anim.on .hb-n3{animation-delay:1.7s}
+.dk-anim.on .hb-c{animation:dkIn .6s ease both 2.2s}
+.dk-anim.on .hb-glow{animation:hbBreathe 4s ease-in-out infinite}
+.hb-glow{transform-box:fill-box;transform-origin:center}
+.hb-ray{stroke-dasharray:8 8}
+.dk-anim.on .hb-ray{animation:hbFlow 1.4s linear infinite}
+.hb-d{opacity:0}
+.dk-anim.on .hb-d1{offset-path:path('M800 300 L800 132');offset-rotate:0deg;animation:hbDot 2.4s ease-in 2s infinite}
+.dk-anim.on .hb-d2{offset-path:path('M800 300 L384 476');offset-rotate:0deg;animation:hbDot 2.4s ease-in 2.8s infinite}
+.dk-anim.on .hb-d3{offset-path:path('M800 300 L1216 476');offset-rotate:0deg;animation:hbDot 2.4s ease-in 3.6s infinite}
+@keyframes hbBreathe{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.14)}}
+@keyframes hbFlow{from{stroke-dashoffset:32}to{stroke-dashoffset:0}}
+@keyframes hbDot{0%{offset-distance:0%;opacity:0}10%{opacity:1}80%{opacity:1}100%{offset-distance:100%;opacity:0}}
+</style>
+<div class="dk-anim"><svg class="dk-svg" viewBox="0 0 1600 620" role="img" aria-label="One scene file is read by Unreal, Godot and Three.js, each interpreting it in its own way">
+<defs><radialGradient id="hbG" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#c4b5fd"/><stop offset="65%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#7c5cf0"/></radialGradient><radialGradient id="hbGl" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#c4b5fd" stop-opacity=".6"/><stop offset="100%" stop-color="#7c5cf0" stop-opacity="0"/></radialGradient></defs>
+<g stroke="#00d4ff" stroke-width="3" stroke-opacity=".6" fill="none"><path class="hb-ray" d="M800 300V132"/><path class="hb-ray" d="M800 300L384 476"/><path class="hb-ray" d="M800 300L1216 476"/></g>
+<g class="hb-hub"><circle class="hb-glow" cx="800" cy="300" r="150" fill="url(#hbGl)"/><circle cx="800" cy="300" r="108" fill="url(#hbG)"/><text x="800" y="296" text-anchor="middle" fill="#fff" font-size="32" font-weight="700">one scene</text><text x="800" y="336" text-anchor="middle" fill="#fff" font-size="24" font-family="JetBrains Mono,monospace">.usda / .glb</text></g>
+<g class="hb-n hb-n1"><rect x="640" y="40" width="320" height="92" rx="18" fill="rgba(0,212,255,.12)" stroke="#00d4ff" stroke-width="3"/><text x="800" y="99" text-anchor="middle" fill="#fff" font-size="38" font-weight="700">Unreal</text></g>
+<g class="hb-n hb-n2"><rect x="60" y="430" width="324" height="92" rx="18" fill="rgba(52,211,153,.12)" stroke="#34d399" stroke-width="3"/><text x="222" y="489" text-anchor="middle" fill="#fff" font-size="38" font-weight="700">Godot</text></g>
+<g class="hb-n hb-n3"><rect x="1216" y="430" width="324" height="92" rx="18" fill="rgba(245,158,11,.12)" stroke="#f59e0b" stroke-width="3"/><text x="1378" y="489" text-anchor="middle" fill="#fff" font-size="38" font-weight="700">Three.js</text></g>
+<g class="hb-c" font-size="28"><text x="990" y="82" fill="#dbe4ff">opens it as a Stage</text><text x="990" y="120" fill="#9fb3c8" font-size="26">or converts it to assets</text>
+<text x="222" y="565" text-anchor="middle" fill="#dbe4ff">importer builds nodes</text><text x="222" y="600" text-anchor="middle" fill="#9fb3c8" font-size="26">StandardMaterial3D</text>
+<text x="1378" y="565" text-anchor="middle" fill="#dbe4ff">GLTFLoader builds meshes</text><text x="1378" y="600" text-anchor="middle" fill="#9fb3c8" font-size="26">MeshStandardMaterial</text>
+</g>
+<circle class="hb-d hb-d1" r="9" fill="#00d4ff"/><circle class="hb-d hb-d2" r="9" fill="#00d4ff"/><circle class="hb-d hb-d3" r="9" fill="#00d4ff"/>
+</svg></div>`,
+        notes: `- Adapted from the SensAI deck's hub-and-rays diagram (the technique: a glowing hub, flowing rays, dots traveling to each reader). Here the hub is our one exported scene, and the readers are Unreal, Godot, and Three.js.
+- The point: the file is the same, but each engine's importer makes its own decisions about nodes, materials, and lights. That is why the next slide (same camera, three renderers) does not look identical, and why Check after looks in the target.
+- Godot's glTF importer builds StandardMaterial3D; Three.js GLTFLoader builds MeshStandardMaterial; Unreal either references USD as a Stage or converts on import. About 1 minute.` },
       { layout: `html`, title: `The side-by-side`, subtitle: `Same camera. Same scene. Three renderers.`,
         html: `<div class='dk-trio'><figure class='dk-fig'><img src='images/class/sbs-unreal.jpg' alt='Unreal Engine render of the class demo scene'><figcaption>Unreal 5.8</figcaption></figure><figure class='dk-fig'><img src='images/class/sbs-godot.jpg' alt='Godot render of the same scene'><figcaption>Godot 4.7</figcaption></figure><figure class='dk-fig'><img src='images/class/sbs-threejs.jpg' alt='Three.js render of the same scene'><figcaption>Three.js r170</figcaption></figure></div>`,
         caption: `Same GLB camera in all three. Light intensities do not map 1:1: tuned by eye in Godot and Three.js. Spot the differences.`,
@@ -264,8 +402,40 @@ def Xform "World"
 - Interchange: UE’s newer import framework for FBX / OBJ / glTF and increasingly USD. The real lesson is that pipelines are customizable in Blueprint or Python, so import becomes a repeatable, scripted step instead of a dialog. In recent 5.x (including 5.8.3) Interchange is the default for FBX, OBJ, glTF/GLB, MaterialX, and textures. USD goes through Interchange only with the Experimental \"Interchange OpenUSD\" plugin; otherwise the USD Importer plugin handles USD.
 - USD Stage editor: the stage is referenced, not imported. You edit layers and keep the source of truth outside UE. It is the inverse of the export half.
 - Keep each row to about 3 minutes; leave time for the round-trip question.` },
-      { title: `The round-trip question`, subtitle: `“Can I go UE to USD, edit in Houdini or Blender, and come back?”`,
-        img: ``, bullets: [`Geometry, transforms, and cameras: yes`, `Materials: you get a starting point`, `Logic (Blueprints): no`, `Use USD layers so your edits survive re-export`],
+      { layout: `html`, title: `The round-trip question`, subtitle: `“Can I go UE to USD, edit in Houdini or Blender, and come back?”`,
+        html: `<style>
+.dk-anim.on .rt-a{animation:dkIn .6s ease both}
+.dk-anim.on .rt-l1{animation:rtDrop .7s ease both .3s}.dk-anim.on .rt-l2{animation:rtDrop .7s ease both .9s}.dk-anim.on .rt-l3{animation:rtDrop .7s ease both 1.5s}
+.dk-anim.on .rt-c1{animation:dkIn .5s ease both 2.2s}.dk-anim.on .rt-c2{animation:dkIn .5s ease both 2.45s}.dk-anim.on .rt-c3{animation:dkIn .5s ease both 2.7s}.dk-anim.on .rt-c4{animation:dkIn .5s ease both 2.95s}.dk-anim.on .rt-c5{animation:dkIn .5s ease both 3.2s}
+.rt-flash,.rt-tag,.rt-dot{opacity:0}
+.dk-anim.on .rt-flash{animation:rtFlash 6s ease-in-out 3.6s infinite}
+.dk-anim.on .rt-tag{animation:rtTag 6s ease-in-out 3.6s infinite}
+.dk-anim.on .rt-dot{offset-path:path('M230 80 H800 H1370');offset-rotate:0deg;animation:rtDot 4.5s linear 1s infinite}
+@keyframes rtDrop{from{opacity:0;transform:translateY(-36px)}to{opacity:1;transform:none}}
+@keyframes rtFlash{0%,10%{opacity:0}18%,45%{opacity:1}60%,100%{opacity:0}}
+@keyframes rtTag{0%,16%{opacity:0}24%,80%{opacity:1}95%,100%{opacity:0}}
+@keyframes rtDot{0%{offset-distance:0%;opacity:1}95%{offset-distance:100%;opacity:1}100%{offset-distance:100%;opacity:0}}
+</style>
+<div class="dk-anim"><svg class="dk-svg" viewBox="0 0 1600 600" role="img" aria-label="Round trip: Unreal exports USD, Blender or Houdini edit in a new layer, Unreal opens the stack; a re-export replaces only the bottom layer">
+<defs><marker id="rtM" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#9fb3c8"/></marker></defs>
+<g class="rt-a"><rect x="40" y="30" width="380" height="100" rx="18" fill="rgba(20,24,48,.9)" stroke="#00d4ff" stroke-width="3"/><text x="230" y="76" text-anchor="middle" fill="#fff" font-size="36" font-weight="700">Unreal</text><text x="230" y="112" text-anchor="middle" fill="#9fb3c8" font-size="26">export .usda</text>
+<rect x="610" y="30" width="380" height="100" rx="18" fill="rgba(20,24,48,.9)" stroke="#a78bfa" stroke-width="3"/><text x="800" y="76" text-anchor="middle" fill="#fff" font-size="36" font-weight="700">Blender / Houdini</text><text x="800" y="112" text-anchor="middle" fill="#9fb3c8" font-size="26">edit in a new layer</text>
+<rect x="1180" y="30" width="380" height="100" rx="18" fill="rgba(20,24,48,.9)" stroke="#34d399" stroke-width="3"/><text x="1370" y="76" text-anchor="middle" fill="#fff" font-size="36" font-weight="700">Unreal again</text><text x="1370" y="112" text-anchor="middle" fill="#9fb3c8" font-size="26">open as a USD Stage</text>
+<g stroke="#9fb3c8" stroke-width="4" fill="none"><path d="M426 80H604" marker-end="url(#rtM)"/><path d="M996 80H1174" marker-end="url(#rtM)"/></g></g>
+<circle class="rt-dot" r="12" fill="#fde68a"/>
+<text x="40" y="200" fill="#9fb3c8" font-size="26" letter-spacing="2">LAYER STACK, STRONGEST ON TOP</text>
+<g class="rt-l3"><rect x="40" y="225" width="800" height="90" rx="16" fill="rgba(52,211,153,.14)" stroke="#34d399" stroke-width="3"/><text x="70" y="282" fill="#fff" font-size="32" font-weight="700" font-family="JetBrains Mono,monospace">edits.usda</text><text x="810" y="282" text-anchor="end" fill="#b6f0d8" font-size="26">moved props, new camera</text></g>
+<g class="rt-l2"><rect x="40" y="335" width="800" height="90" rx="16" fill="rgba(167,139,250,.14)" stroke="#a78bfa" stroke-width="3"/><text x="70" y="392" fill="#fff" font-size="32" font-weight="700" font-family="JetBrains Mono,monospace">lookdev.usda</text><text x="810" y="392" text-anchor="end" fill="#d9ccff" font-size="26">re-authored materials</text></g>
+<g class="rt-l1"><rect x="40" y="445" width="800" height="90" rx="16" fill="rgba(0,212,255,.14)" stroke="#00d4ff" stroke-width="3"/><text x="70" y="502" fill="#fff" font-size="32" font-weight="700" font-family="JetBrains Mono,monospace">scene.usda</text><text x="810" y="502" text-anchor="end" fill="#9fe9ff" font-size="26">the Unreal export</text>
+<rect class="rt-flash" x="40" y="445" width="800" height="90" rx="16" fill="rgba(245,158,11,.2)" stroke="#f59e0b" stroke-width="5"/><g class="rt-tag"><rect x="440" y="551" width="400" height="40" rx="20" fill="#f59e0b"/><text x="640" y="580" text-anchor="middle" fill="#1a1204" font-size="26" font-weight="700">re-exported: only this layer changes</text></g></g>
+<text x="900" y="200" fill="#9fb3c8" font-size="26" letter-spacing="2">WHAT COMES BACK</text>
+<g font-size="32" font-weight="700">
+<g class="rt-c1"><rect x="900" y="225" width="660" height="60" rx="12" fill="rgba(20,24,48,.9)"/><rect x="900" y="225" width="8" height="60" fill="#34d399"/><text x="932" y="267" fill="#fff">Geometry</text><text x="1530" y="267" text-anchor="end" fill="#34d399">yes</text></g>
+<g class="rt-c2"><rect x="900" y="297" width="660" height="60" rx="12" fill="rgba(20,24,48,.9)"/><rect x="900" y="297" width="8" height="60" fill="#34d399"/><text x="932" y="339" fill="#fff">Transforms</text><text x="1530" y="339" text-anchor="end" fill="#34d399">yes</text></g>
+<g class="rt-c3"><rect x="900" y="369" width="660" height="60" rx="12" fill="rgba(20,24,48,.9)"/><rect x="900" y="369" width="8" height="60" fill="#34d399"/><text x="932" y="411" fill="#fff">Cameras</text><text x="1530" y="411" text-anchor="end" fill="#34d399">yes</text></g>
+<g class="rt-c4"><rect x="900" y="441" width="660" height="60" rx="12" fill="rgba(20,24,48,.9)"/><rect x="900" y="441" width="8" height="60" fill="#f59e0b"/><text x="932" y="483" fill="#fff">Materials</text><text x="1530" y="483" text-anchor="end" fill="#f59e0b">a starting point</text></g>
+<g class="rt-c5"><rect x="900" y="513" width="660" height="60" rx="12" fill="rgba(20,24,48,.9)"/><rect x="900" y="513" width="8" height="60" fill="#fb7185"/><text x="932" y="555" fill="#fff">Blueprint logic</text><text x="1530" y="555" text-anchor="end" fill="#fb7185">no</text></g></g>
+</svg></div>`,
         notes: `- This is the question the class will ask, so ask it for them.
 - Honest answer: geometry, transforms, and cameras, yes. Materials, you get a starting point. Logic, no.
 - Use USD layers so your edits survive re-export. This is exactly what the RenderMan bridge calls Tier 3: hero looks authored natively and composed over our export as sublayers. It is the next block’s recurring idea.` },
@@ -673,6 +843,8 @@ body.pr-dragging,body.pr-dragging *{user-select:none!important;-webkit-user-sele
 .layout-html .dk-take li span{font-size:.55em;color:var(--dim);margin-top:.25em}
 .layout-html .dk-res{list-style:none;padding:0;display:flex;flex-direction:column;gap:.7em;font-size:clamp(1rem,1.9vw,2.1rem);line-height:1.3}
 .layout-html .dk-res b{color:var(--primary)}
+.layout-html .dk-svg{display:block;width:100%;max-width:1700px;height:auto;margin:0 auto;font-family:inherit}
+@keyframes dkIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .case-slide.layout-big{flex-direction:column;text-align:center;padding:clamp(50px,5vw,110px);justify-content:center;align-items:center}
 .case-slide.layout-big .big-stack{display:flex;flex-direction:column;gap:clamp(18px,2.5vw,40px);align-items:center;max-width:1300px}
 .case-slide.layout-big .big-eyebrow{font-size:clamp(1.4rem,2.6vw,2.4rem);font-weight:500;color:rgba(240,244,255,.78);letter-spacing:-.01em;line-height:1.2}
@@ -1304,6 +1476,8 @@ let _playingTimer=null;
 window._showPlaying=function(ms){if(_playingTimer)clearTimeout(_playingTimer);_navSpinner.classList.add('active');_playingTimer=setTimeout(()=>{_navSpinner.classList.remove('active');_playingTimer=null;},ms);};
 window._hidePlaying=function(){if(_playingTimer){clearTimeout(_playingTimer);_playingTimer=null;}_navSpinner.classList.remove('active');};
 {const _og=goTo;goTo=function(n){window._hidePlaying();_og(n);const t=allSlides[current]?.dataset.type;const sd=slideSteps.get(allSlides[current]);const hasSteps=sd&&sd.steps.length>0;if(hasSteps){try{sd.reset&&sd.reset();}catch(e){}sd.current=0;}if(t==='map')window._showPlaying(6000);else if(hasSteps)window._showPlaying(2000);else if(t==='case'||t==='lesson')window._showPlaying(2500);};
+// Diagram slides (.dk-anim): animations exist only under .on, added on slide entry so they replay; without it (print/shot/PDF) the static final state renders.
+{const _dkg=goTo;goTo=function(n){_dkg.apply(this,arguments);try{if(/[?&](print|shot)/.test(location.search))return;const a=allSlides[current]&&allSlides[current].querySelector('.dk-anim');if(a){a.classList.remove('on');void a.getBoundingClientRect();a.classList.add('on');}}catch(e){}};}
 const _oa=advanceStep;advanceStep=function(){const r=_oa();if(r)window._showPlaying(3000);else window._hidePlaying();return r;};}
 let _apt=null;const _apc=document.getElementById('autoplay-cb');
 function _apTick(){if(!_apc.checked)return;if(!advanceStep()){const n=nextVisible(current,1);if(n>=0)goTo(n);else{_apc.checked=false;return;}}const t=allSlides[current]?.dataset.type;_apt=setTimeout(_apTick,t==='lesson'||t==='bonus'?8000:t==='case'?12000:6000);}
