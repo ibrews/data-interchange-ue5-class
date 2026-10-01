@@ -47,7 +47,7 @@ const SECTIONS = [
     cases: [
       { layout: `html`, title: `The plan`, subtitle: `120 minutes, six blocks, one scene`,
         html: `<table class='dk-table dk-agenda'><thead><tr><th>Time</th><th>Block</th><th>Mode</th></tr></thead><tbody>
-<tr><td>0:00</td><td><b>A.</b> Why this matters + the format map</td><td>Talk</td></tr>
+<tr><td>0:00</td><td><b>A.</b> Why this matters, the format map, and where FBX still fits</td><td>Talk</td></tr>
 <tr><td>0:10</td><td><b>B.</b> Unreal to OpenUSD (stock exporter), then read the file</td><td>Follow along</td></tr>
 <tr><td>0:35</td><td><b>C.</b> Unreal to GLB (glTF Exporter, and USD to GLB)</td><td>Follow along</td></tr>
 <tr><td>0:55</td><td><b>D.</b> Same scene in Godot and Three.js, side by side</td><td>Follow along</td></tr>
@@ -64,28 +64,57 @@ const SECTIONS = [
     ] },
 
   { year: `A`, accent: `teal`,
-    lesson: { title: `Why This Matters.\nThe Format Map.`, short: `WHY + MAP`, tagline: `Unreal is a great place to author and a bad place to be trapped. The web, Godot, Vision Pro, RenderMan, and your client’s tools all live outside it.`, tags: `0:00–0:10 · Talk`,
+    lesson: { title: `Why This Matters.\nThe Format Map.`, short: `WHY + MAP`, tagline: `Unreal is a great place to author and a bad place to be trapped. The web, Godot, Vision Pro, RenderMan, and your client’s tools all live outside it. FBX, OpenUSD and GLB are the three ways out.`, tags: `0:00–0:10 · Talk`,
       notes: `- 10 minutes total for Block A.
 - UE is a great authoring environment and a bad place to be trapped. The web, Godot, Vision Pro, RenderMan, and clients’ DCC tools all live outside it.
 - Setup for the next slide: I will draw this table live if I can, but it is here so you can screenshot it.` },
     cases: [
       { layout: `html`, title: `The format map`, subtitle: `What each format is willing to carry`,
-        html: `<table class='dk-table dk-map'><thead><tr><th></th><th>Unreal (.uasset)</th><th>OpenUSD</th><th>glTF / GLB</th></tr></thead><tbody>
-<tr><th>Purpose</th><td>Engine-native</td><td>Scene description, composition, pipelines</td><td>Delivery / runtime transmission</td></tr>
-<tr><th>Units / up axis</th><td>cm, Z-up, left-handed</td><td>Declared (<code>metersPerUnit</code>, <code>upAxis</code>)</td><td>Meters, Y-up, right-handed</td></tr>
-<tr><th>Materials</th><td>Node graphs, Substrate</td><td>UsdPreviewSurface / MaterialX</td><td>Metallic-roughness PBR + KHR extensions</td></tr>
-<tr><th>Instancing</th><td>ISM / HISM, foliage</td><td>PointInstancer / scenegraph instancing</td><td>Shared mesh on many nodes; optional <code>EXT_mesh_gpu_instancing</code></td></tr>
-<tr><th>Lights</th><td>Full</td><td>UsdLux</td><td><code>KHR_lights_punctual</code> (point, spot, directional only)</td></tr>
-<tr><th>Blueprint logic</th><td class='y'>Yes</td><td class='n'>No</td><td class='n'>No</td></tr>
-<tr><th>Composition / layers</th><td class='n'>No</td><td class='y'>Yes — the superpower</td><td class='n'>No</td></tr>
+        html: `<table class='dk-table dk-map'><thead><tr><th></th><th>Unreal (.uasset)</th><th>FBX</th><th>OpenUSD</th><th>glTF / GLB</th></tr></thead><tbody>
+<tr><th>Purpose</th><td>Engine-native</td><td>Legacy interchange: meshes, rigs, animation</td><td>Scene description, composition, pipelines</td><td>Delivery / runtime transmission</td></tr>
+<tr><th>Units / up axis</th><td>cm, Z-up, left-handed</td><td>Axis / unit options; UE converts on import</td><td>Declared (<code>metersPerUnit</code>, <code>upAxis</code>)</td><td>Meters, Y-up, right-handed</td></tr>
+<tr><th>Materials</th><td>Node graphs, Substrate</td><td>Basic properties, no node graphs</td><td>UsdPreviewSurface / MaterialX</td><td>Metallic-roughness PBR + KHR extensions</td></tr>
+<tr><th>Instancing</th><td>ISM / HISM, foliage</td><td>None (instances become copies)</td><td>PointInstancer / scenegraph instancing</td><td>Shared mesh on many nodes; optional <code>EXT_mesh_gpu_instancing</code></td></tr>
+<tr><th>Lights / cameras</th><td>Full</td><td>Basic</td><td>UsdLux</td><td><code>KHR_lights_punctual</code> (point, spot, directional only)</td></tr>
+<tr><th>Blueprint logic</th><td class='y'>Yes</td><td class='n'>No</td><td class='n'>No</td><td class='n'>No</td></tr>
+<tr><th>Composition / layers</th><td class='n'>No</td><td class='n'>No</td><td class='y'>Yes — the superpower</td><td class='n'>No</td></tr>
 </tbody></table>`,
         notes: `- This is the one slide of the session. Give it about 4 minutes and go row by row; students should screenshot it.
 - Units and up axis: Unreal is centimeters, Z-up, left-handed. glTF is meters, Y-up, right-handed. USD lets the file declare its own units and up axis, which is why you can read them out of the file (we will do that in Block B).
 - Materials: UE has node graphs (and Substrate). USD has UsdPreviewSurface and MaterialX. glTF has metallic-roughness PBR plus KHR extensions. None of these is a superset of another. That is the whole reason materials are the hard part.
 - Instancing: ISM/HISM and foliage in UE; PointInstancer or scenegraph instancing in USD; EXT_mesh_gpu_instancing in glTF. Note that support for the extension varies by viewer.
 - Lights: glTF lights via KHR_lights_punctual carry only point, spot, and directional. Area lights and most of what UE offers do not travel.
+- FBX column: the older interchange format. It is still common for meshes, skeletons, and animation, but it carries basic material properties (no node graphs), no instancing (instances become copies), basic lights and cameras, and no composition. Unreal converts units and axes on import using the import options.
 - Blueprint logic travels nowhere. Composition and layers exist only in USD, and that is its superpower.
 - Source: the plan doc, Block A table.` },
+      { layout: `html`, title: `Where FBX still fits`, subtitle: `Not dead, just narrower. Know when it is the right tool.`,
+        html: `<style>
+.dk-anim.on .fx-r{animation:dkIn .5s ease both}
+.dk-anim.on .fx-r1{animation-delay:.2s}.dk-anim.on .fx-r2{animation-delay:.7s}.dk-anim.on .fx-r3{animation-delay:1.2s}.dk-anim.on .fx-r4{animation-delay:1.7s}
+.dk-anim.on .fx-c{animation:dkIn .6s ease both 2.4s}
+.dk-anim.on .fx-glow{animation:fxGlow 3s ease-in-out infinite 2.4s}
+@keyframes fxGlow{0%,100%{opacity:.6}50%{opacity:1}}
+</style>
+<div class="dk-anim"><svg class="dk-svg" viewBox="0 0 1600 650" role="img" aria-label="Decision flow: characters and animation go to FBX or USD Skel, whole scenes to OpenUSD, web and runtime delivery to GLB, Apple platforms to USDZ">
+<defs><marker id="fxM" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#9fb3c8"/></marker></defs>
+<g class="fx-r fx-r1"><rect x="40" y="10" width="620" height="80" rx="18" fill="rgba(20,24,48,.9)" stroke="#9fb3c8" stroke-width="2"/><text x="350" y="62" text-anchor="middle" fill="#fff" font-size="34" font-weight="600">Characters and animation</text>
+<path d="M670 50H790" stroke="#9fb3c8" stroke-width="4" marker-end="url(#fxM)"/><rect class="fx-glow" x="800" y="10" width="760" height="80" rx="18" fill="rgba(245,158,11,.14)" stroke="#f59e0b" stroke-width="4"/><text x="1180" y="62" text-anchor="middle" fill="#fff" font-size="36" font-weight="700">FBX (or USD Skel)</text></g>
+<g class="fx-r fx-r2"><rect x="40" y="110" width="620" height="80" rx="18" fill="rgba(20,24,48,.9)" stroke="#9fb3c8" stroke-width="2"/><text x="350" y="162" text-anchor="middle" fill="#fff" font-size="34" font-weight="600">Whole scenes and layout</text>
+<path d="M670 150H790" stroke="#9fb3c8" stroke-width="4" marker-end="url(#fxM)"/><rect x="800" y="110" width="760" height="80" rx="18" fill="rgba(167,139,250,.14)" stroke="#a78bfa" stroke-width="3"/><text x="1180" y="162" text-anchor="middle" fill="#fff" font-size="36" font-weight="700">OpenUSD</text></g>
+<g class="fx-r fx-r3"><rect x="40" y="210" width="620" height="80" rx="18" fill="rgba(20,24,48,.9)" stroke="#9fb3c8" stroke-width="2"/><text x="350" y="262" text-anchor="middle" fill="#fff" font-size="34" font-weight="600">Web and runtime delivery</text>
+<path d="M670 250H790" stroke="#9fb3c8" stroke-width="4" marker-end="url(#fxM)"/><rect x="800" y="210" width="760" height="80" rx="18" fill="rgba(52,211,153,.14)" stroke="#34d399" stroke-width="3"/><text x="1180" y="262" text-anchor="middle" fill="#fff" font-size="36" font-weight="700">GLB</text></g>
+<g class="fx-r fx-r4"><rect x="40" y="310" width="620" height="80" rx="18" fill="rgba(20,24,48,.9)" stroke="#9fb3c8" stroke-width="2"/><text x="350" y="362" text-anchor="middle" fill="#fff" font-size="34" font-weight="600">Apple platforms</text>
+<path d="M670 350H790" stroke="#9fb3c8" stroke-width="4" marker-end="url(#fxM)"/><rect x="800" y="310" width="760" height="80" rx="18" fill="rgba(0,212,255,.12)" stroke="#00d4ff" stroke-width="3"/><text x="1180" y="362" text-anchor="middle" fill="#fff" font-size="36" font-weight="700">USDZ</text></g>
+<g class="fx-c"><rect x="40" y="420" width="730" height="215" rx="18" fill="rgba(245,158,11,.07)" stroke="#f59e0b" stroke-width="2" stroke-dasharray="10 8"/><text x="70" y="468" fill="#fde68a" font-size="30" font-weight="700" letter-spacing="2">STILL THE RIGHT TOOL</text>
+<text x="70" y="514" fill="#dbe4ff" font-size="28">Skeletal meshes + animation, DCC to UE and back</text><text x="70" y="556" fill="#dbe4ff" font-size="29">Marketplace / Fab assets that ship as FBX</text><text x="70" y="598" fill="#dbe4ff" font-size="29">The MetaHuman export path, commonly</text>
+<rect x="810" y="420" width="750" height="215" rx="18" fill="rgba(251,113,133,.07)" stroke="#fb7185" stroke-width="2" stroke-dasharray="10 8"/><text x="840" y="468" fill="#fda4af" font-size="30" font-weight="700" letter-spacing="2">WHAT IT LOSES VS USD / glTF</text>
+<text x="840" y="514" fill="#dbe4ff" font-size="29">No composition or layers, no instancing</text><text x="840" y="556" fill="#dbe4ff" font-size="29">No material graphs, only basic properties</text><text x="840" y="598" fill="#9fb3c8" font-size="25">UE 5.8.3 (our tests): FBX imports via Interchange</text></g>
+</svg></div>`,
+        notes: `- The title promises FBX, so this is where it gets its due. FBX is not dead: it is narrower. Reach for it when the job is skeletal meshes and animation moving between UE and a DCC, when an asset arrives from Fab or the Marketplace as FBX, and commonly on the MetaHuman export path.
+- What it loses against USD and glTF: no composition or layers, no instancing (instances become copies), no material graphs (basic legacy properties only), basic lights and cameras. That is the FBX column in the format map.
+- The decision flow: characters and animation to FBX (or USD Skel); whole scenes and layout to OpenUSD; web and runtime delivery to GLB; Apple platforms to USDZ.
+- In recent UE 5.x, including 5.8.3 in our tests, FBX import goes through Interchange by default. That is the same framework we meet again in Block E, and the same scriptable pipelines apply.
+- If asked: the legacy FBX importer still exists in some versions as an option. Do not promise specifics; check your engine version.` },
       { layout: `html`, title: `The pipeline, and what falls off`, subtitle: `Every hop is a contract. Watch what each one refuses to carry.`,
         html: `<style>
 .pl{position:relative;width:100%;max-width:1500px;margin:30px auto 0;height:430px;font-family:inherit}
@@ -819,7 +848,7 @@ body.pr-dragging,body.pr-dragging *{user-select:none!important;-webkit-user-sele
 .layout-html .dk-table tbody tr:nth-child(odd){background:rgba(240,244,255,.04)}
 .layout-html .dk-table code,.layout-html .dk-side code{font-family:'JetBrains Mono',monospace;font-size:.86em;color:var(--primary)}
 .layout-html .dk-table td.y{color:#6ee7a0;font-weight:600}.layout-html .dk-table td.n{color:rgba(240,244,255,.4)}
-.layout-html .dk-table td.b{color:#ff8f7a;font-weight:600}.layout-html .dk-table td.m{color:var(--amber);font-weight:600}.layout-html .dk-cmp{font-size:clamp(.9rem,1.6vw,1.85rem)!important}
+.layout-html .dk-table td.b{color:#ff8f7a;font-weight:600}.layout-html .dk-table td.m{color:var(--amber);font-weight:600}.layout-html .dk-map{font-size:clamp(.8rem,1.3vw,1.5rem)!important}.layout-html .dk-map th,.layout-html .dk-map td{padding:.4em .7em}.layout-html .dk-cmp{font-size:clamp(.9rem,1.6vw,1.85rem)!important}
 .layout-html .dk-agenda{font-size:clamp(1rem,1.9vw,2.2rem)!important}
 .layout-html .dk-agenda td:first-child{font-family:'JetBrains Mono',monospace;color:var(--primary);white-space:nowrap}
 .layout-html .dk-agenda tr.dk-break td{color:var(--dim);font-style:italic}
